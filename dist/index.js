@@ -1367,7 +1367,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github, message });
+    const slackAttachments = buildSlackAttachments({ step, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1380,6 +1380,7 @@ const run = async () => {
     const slackMessageArgs = {
       channel: channelId,
       slackAttachments,
+      text: message,
     };
 
     if (messageId) {
@@ -9911,13 +9912,15 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ step, status, color, github, message }) => {
+const buildSlackAttachments = ({ step, status, color, github }) => {
   const { payload, ref, workflow, eventName, run_id } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
+
+  console.log(message);
 
   const referenceLink =
     event === 'pull_request'
@@ -9935,7 +9938,6 @@ const buildSlackAttachments = ({ step, status, color, github, message }) => {
   return [
     {
       color,
-      text: message,
       fields: [
         {
           title: 'Step',

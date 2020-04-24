@@ -21,7 +21,7 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ step, status, color, github, message }) => {
+const buildSlackAttachments = ({ step, status, color, github }) => {
   const { payload, ref, workflow, eventName, run_id } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
@@ -47,7 +47,6 @@ const buildSlackAttachments = ({ step, status, color, github, message }) => {
   return [
     {
       color,
-      text: 'test message.',
       fields: [
         {
           title: 'Step',

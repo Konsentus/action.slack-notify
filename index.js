@@ -19,7 +19,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github, message });
+    const slackAttachments = buildSlackAttachments({ step, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -32,6 +32,7 @@ const run = async () => {
     const slackMessageArgs = {
       channel: channelId,
       slackAttachments,
+      text: message,
     };
 
     if (messageId) {
