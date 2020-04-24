@@ -9966,8 +9966,8 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
         },
         referenceLink,
         {
-          title: 'User',
-          value: actor,
+          title: 'Repo',
+          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
           short: true,
         },
         {
@@ -9976,8 +9976,8 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
           short: true,
         },
       ],
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+      footer_icon: 'https://octodex.github.com/images/jenktocat.jpg',
+      footer: `<https://github.com/${actor} | ${actor}>`,
       ts: Math.floor(Date.now() / 1000),
     },
   ];
