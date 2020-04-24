@@ -45,7 +45,7 @@ const buildSlackAttachments = ({ step, status, color, github, message }) => {
   return [
     {
       color,
-      message,
+      text: message,
       fields: [
         {
           title: 'Step',
