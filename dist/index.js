@@ -1355,7 +1355,7 @@ const run = async () => {
   try {
     const channel = core.getInput('channel');
     const step = core.getInput('step');
-    const message = core.getInput('message', { required: true });
+    const message = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
     const messageId = core.getInput('message_id');
