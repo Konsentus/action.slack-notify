@@ -1,4 +1,5 @@
 const { context } = require('@actions/github');
+const core = require('@actions/core');
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 

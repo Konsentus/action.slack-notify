@@ -9889,6 +9889,7 @@ function hasFirstPage (link) {
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 const { context } = __webpack_require__(469);
+const core = __webpack_require__(470);
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
