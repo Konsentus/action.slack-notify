@@ -7,7 +7,7 @@ const run = async () => {
   try {
     const channel = core.getInput('channel');
     const step = core.getInput('step');
-    const message = core.getInput('text', { required: true });
+    const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
     const messageId = core.getInput('message_id');
@@ -17,7 +17,7 @@ const run = async () => {
     core.info({
       channel,
       step,
-      message,
+      text,
       status,
       color,
       messageId,
@@ -41,7 +41,7 @@ const run = async () => {
     const slackMessageArgs = {
       channel: channelId,
       slackAttachments,
-      text: message,
+      text,
     };
 
     if (messageId) {
