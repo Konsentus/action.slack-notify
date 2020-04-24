@@ -1394,6 +1394,8 @@ const run = async () => {
       text,
     };
 
+    core.info(JSON.stringify(slackMessageArgs));
+
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
