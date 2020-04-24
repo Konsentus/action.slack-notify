@@ -1,5 +1,4 @@
 const { context } = require('@actions/github');
-const core = require('@actions/core');
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
@@ -22,7 +21,7 @@ const lookUpChannelId = async ({ slack, channel }) => {
 };
 
 const buildSlackAttachments = ({ step, status, color, github }) => {
-  const { payload, ref, workflow, eventName, run_id } = github.context;
+  const { payload, ref, workflow, eventName, run_id, actor } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
@@ -53,7 +52,7 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
         },
         {
           title: 'Action',
-          value: `<https://github.com/${repo}/actions/runs/${run_id}> | ${workflow}>`,
+          value: `<https://github.com/${repo}/actions/runs/${run_id} | ${workflow}>`,
           short: true,
         },
         {
@@ -62,6 +61,11 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
           short: true,
         },
         referenceLink,
+        {
+          title: 'User',
+          value: actor,
+          short: true,
+        },
         {
           title: 'Event',
           value: event,
