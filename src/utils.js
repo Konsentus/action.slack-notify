@@ -1,7 +1,7 @@
 const { context } = require('@actions/github');
 
-function buildSlackAttachments({ status, color, github }) {
-  const { payload, ref, workflow, eventName } = github.context;
+function buildSlackAttachments({ step, status, color, github, message }) {
+  const { payload, ref, workflow, eventName, run_id } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
@@ -24,10 +24,16 @@ function buildSlackAttachments({ status, color, github }) {
   return [
     {
       color,
+      message,
       fields: [
         {
+          title: 'Step',
+          value: `${step}`,
+          short: true,
+        },
+        {
           title: 'Action',
-          value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+          value: `<https://github.com/${repo}/actions/runs/${run_id}> | ${workflow}>`,
           short: true,
         },
         {
