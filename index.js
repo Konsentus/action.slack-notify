@@ -19,7 +19,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github, title, message });
+    const slackAttachments = buildSlackAttachments({ step, status, color, github, message });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -57,7 +57,7 @@ const lookUpChannelId = async ({ slack, channel }) => {
   for await (const page of slack.paginate('conversations.list', { types: 'public_channel, private_channel' })) {
     core.setDebug(page);
     // You can inspect each page, find your result, and stop the loop with a `break` statement
-    const match = page.channels.find((c) => c.name === formattedChannel);
+    const match = page.channels.find(c => c.name === formattedChannel);
     if (match) {
       result = match.id;
       break;
