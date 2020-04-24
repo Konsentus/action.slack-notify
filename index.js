@@ -42,7 +42,7 @@ const run = async () => {
 
     const slackMessageArgs = {
       channel: channelId,
-      slackAttachments,
+      attachments: slackAttachments,
       text,
     };
 
