@@ -19,7 +19,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github, title });
+    const slackAttachments = buildSlackAttachments({ step, status, color, github, title, message });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
