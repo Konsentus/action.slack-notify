@@ -1,6 +1,27 @@
 const { context } = require('@actions/github');
 
-function buildSlackAttachments({ step, status, color, github, message }) {
+const formatChannelName = channel => channel.replace(/[#@]/g, '');
+
+const lookUpChannelId = async ({ slack, channel }) => {
+  let result;
+  const formattedChannel = formatChannelName(channel);
+
+  // Async iteration is similar to a simple for loop.
+  // Use only the first two parameters to get an async iterator.
+  for await (const page of slack.paginate('conversations.list', { types: 'public_channel, private_channel' })) {
+    core.setDebug(page);
+    // You can inspect each page, find your result, and stop the loop with a `break` statement
+    const match = page.channels.find(c => c.name === formattedChannel);
+    if (match) {
+      result = match.id;
+      break;
+    }
+  }
+
+  return result;
+};
+
+const buildSlackAttachments = ({ step, status, color, github, message }) => {
   const { payload, ref, workflow, eventName, run_id } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
@@ -53,12 +74,6 @@ function buildSlackAttachments({ step, status, color, github, message }) {
       ts: Math.floor(Date.now() / 1000),
     },
   ];
-}
+};
 
-module.exports.buildSlackAttachments = buildSlackAttachments;
-
-function formatChannelName(channel) {
-  return channel.replace(/[#@]/g, '');
-}
-
-module.exports.formatChannelName = formatChannelName;
+module.exports = { lookUpChannelId, buildSlackAttachments };

@@ -1349,7 +1349,7 @@ function serial(list, iterator, callback)
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const { WebClient } = __webpack_require__(114);
-const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
+const { buildSlackAttachments, lookUpChannelId } = __webpack_require__(543);
 
 const run = async () => {
   try {
@@ -1395,25 +1395,6 @@ const run = async () => {
 };
 
 run();
-
-const lookUpChannelId = async ({ slack, channel }) => {
-  let result;
-  const formattedChannel = formatChannelName(channel);
-
-  // Async iteration is similar to a simple for loop.
-  // Use only the first two parameters to get an async iterator.
-  for await (const page of slack.paginate('conversations.list', { types: 'public_channel, private_channel' })) {
-    core.setDebug(page);
-    // You can inspect each page, find your result, and stop the loop with a `break` statement
-    const match = page.channels.find(c => c.name === formattedChannel);
-    if (match) {
-      result = match.id;
-      break;
-    }
-  }
-
-  return result;
-};
 
 
 /***/ }),
@@ -9909,7 +9890,28 @@ function hasFirstPage (link) {
 
 const { context } = __webpack_require__(469);
 
-function buildSlackAttachments({ step, status, color, github, message }) {
+const formatChannelName = channel => channel.replace(/[#@]/g, '');
+
+const lookUpChannelId = async ({ slack, channel }) => {
+  let result;
+  const formattedChannel = formatChannelName(channel);
+
+  // Async iteration is similar to a simple for loop.
+  // Use only the first two parameters to get an async iterator.
+  for await (const page of slack.paginate('conversations.list', { types: 'public_channel, private_channel' })) {
+    core.setDebug(page);
+    // You can inspect each page, find your result, and stop the loop with a `break` statement
+    const match = page.channels.find(c => c.name === formattedChannel);
+    if (match) {
+      result = match.id;
+      break;
+    }
+  }
+
+  return result;
+};
+
+const buildSlackAttachments = ({ step, status, color, github, message }) => {
   const { payload, ref, workflow, eventName, run_id } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
@@ -9962,15 +9964,9 @@ function buildSlackAttachments({ step, status, color, github, message }) {
       ts: Math.floor(Date.now() / 1000),
     },
   ];
-}
+};
 
-module.exports.buildSlackAttachments = buildSlackAttachments;
-
-function formatChannelName(channel) {
-  return channel.replace(/[#@]/g, '');
-}
-
-module.exports.formatChannelName = formatChannelName;
+module.exports = { lookUpChannelId, buildSlackAttachments };
 
 
 /***/ }),
