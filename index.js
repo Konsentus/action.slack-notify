@@ -14,14 +14,16 @@ const run = async () => {
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
-    core.info({
-      channel,
-      step,
-      text,
-      status,
-      color,
-      messageId,
-    });
+    core.info(
+      JSON.stringify({
+        channel,
+        step,
+        text,
+        status,
+        color,
+        messageId,
+      })
+    );
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);

@@ -1362,14 +1362,16 @@ const run = async () => {
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
-    core.info({
-      channel,
-      step,
-      text,
-      status,
-      color,
-      messageId,
-    });
+    core.info(
+      JSON.stringify({
+        channel,
+        step,
+        text,
+        status,
+        color,
+        messageId,
+      })
+    );
 
     if (!channel && !core.getInput('channel_id')) {
       core.setFailed(`You must provider either a 'channel' or a 'channel_id'.`);
@@ -9928,8 +9930,6 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
-
-  console.log(message);
 
   const referenceLink =
     event === 'pull_request'

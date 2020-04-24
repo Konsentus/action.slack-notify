@@ -29,8 +29,6 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
 
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
-  console.log(message);
-
   const referenceLink =
     event === 'pull_request'
       ? {
