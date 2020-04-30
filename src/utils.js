@@ -1,8 +1,13 @@
+const core = require('@actions/core');
 const { context } = require('@actions/github');
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {
+  core.info(`Starting lookUpChannelId with params:
+    ${slack}
+    ${channel}`);
+
   let result;
   const formattedChannel = formatChannelName(channel);
 
@@ -21,6 +26,12 @@ const lookUpChannelId = async ({ slack, channel }) => {
 };
 
 const buildSlackAttachments = ({ step, status, color, github }) => {
+  core.info(`Starting buildSlackAttachments with params:
+    ${step}
+    ${status}
+    ${color}
+    ${github}`);
+
   const { payload, ref, workflow, eventName, run_id, actor } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;

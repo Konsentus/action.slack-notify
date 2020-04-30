@@ -14,8 +14,6 @@ const run = async () => {
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
-    core.info(messageId);
-
     core.info(
       JSON.stringify({
         channel,
@@ -34,6 +32,7 @@ const run = async () => {
 
     const slackAttachments = buildSlackAttachments({ step, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
+    core.info(channelId);
 
     if (!channelId) {
       core.setFailed(`Slack channel ${channel} could not be found.`);
@@ -54,6 +53,7 @@ const run = async () => {
     core.info(JSON.stringify(slackMessageArgs));
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
+    core.info(JSON.stringify(response));
 
     core.setOutput('message_id', response.ts);
   } catch (error) {

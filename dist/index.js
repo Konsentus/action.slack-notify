@@ -1362,8 +1362,6 @@ const run = async () => {
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
-    core.info(messageId);
-
     core.info(
       JSON.stringify({
         channel,
@@ -1382,6 +1380,7 @@ const run = async () => {
 
     const slackAttachments = buildSlackAttachments({ step, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
+    core.info(channelId);
 
     if (!channelId) {
       core.setFailed(`Slack channel ${channel} could not be found.`);
@@ -1402,6 +1401,7 @@ const run = async () => {
     core.info(JSON.stringify(slackMessageArgs));
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
+    core.info(JSON.stringify(response));
 
     core.setOutput('message_id', response.ts);
   } catch (error) {
@@ -9903,11 +9903,16 @@ function hasFirstPage (link) {
 /***/ 543:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
+const core = __webpack_require__(470);
 const { context } = __webpack_require__(469);
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {
+  core.info(`Starting lookUpChannelId with params:
+    ${slack}
+    ${channel}`);
+
   let result;
   const formattedChannel = formatChannelName(channel);
 
@@ -9926,6 +9931,12 @@ const lookUpChannelId = async ({ slack, channel }) => {
 };
 
 const buildSlackAttachments = ({ step, status, color, github }) => {
+  core.info(`Starting buildSlackAttachments with params:
+    ${step}
+    ${status}
+    ${color}
+    ${github}`);
+
   const { payload, ref, workflow, eventName, run_id, actor } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
