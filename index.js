@@ -6,6 +6,7 @@ const { buildSlackAttachments, lookUpChannelId } = require('./src/utils');
 const run = async () => {
   try {
     const channel = core.getInput('channel');
+    const start = core.getInput('start');
     const step = core.getInput('step');
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
@@ -32,14 +33,14 @@ const run = async () => {
 
     const slackAttachments = buildSlackAttachments({ step, status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
-    core.info(channelId);
 
     if (!channelId) {
       core.setFailed(`Slack channel ${channel} could not be found.`);
       return;
     }
 
-    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
+    const apiMethod = Boolean(start) ? 'update' : 'postMessage';
+    core.info(`apiMethod: ${apiMethod}`);
 
     const slackMessageArgs = {
       channel: channelId,
