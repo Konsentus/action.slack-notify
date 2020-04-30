@@ -9938,10 +9938,14 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
     ${github}`);
 
   const { payload, ref, workflow, eventName, run_id, actor } = github.context;
+
+  core.info(`eventName: ${eventName}`);
+
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
+  core.info(`branch: ${branch}`);
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
   const referenceLink =
