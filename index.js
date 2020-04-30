@@ -39,7 +39,7 @@ const run = async () => {
       return;
     }
 
-    const apiMethod = Boolean(start) ? 'update' : 'postMessage';
+    const apiMethod = Boolean(start) ? 'postMessage' : 'update';
     core.info(`apiMethod: ${apiMethod}`);
 
     const slackMessageArgs = {
