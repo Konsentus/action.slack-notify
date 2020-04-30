@@ -1358,7 +1358,7 @@ const run = async () => {
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
-    const messageId = core.getInput('message_id');
+    const messageId = process.env.SLACK_MESSAGE_ID ? process.env.SLACK_MESSAGE_ID : core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
@@ -1394,11 +1394,10 @@ const run = async () => {
       text,
     };
 
-    core.info(JSON.stringify(slackMessageArgs));
-
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
+    core.info(JSON.stringify(slackMessageArgs));
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
 
