@@ -9947,6 +9947,7 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
 
   core.info(`branch: ${branch}`);
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
+  core.info(`sha: ${sha}`);
 
   const referenceLink =
     event === 'pull_request'
