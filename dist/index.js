@@ -1362,6 +1362,8 @@ const run = async () => {
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
+    core.info(messageId);
+
     core.info(
       JSON.stringify({
         channel,
