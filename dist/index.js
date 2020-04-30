@@ -9943,10 +9943,10 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
 
   const { owner, repo } = context.repo;
   const event = eventName;
-  const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
+  const branch = event === 'pull_request'; // ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
 
   core.info(`branch: ${branch}`);
-  const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
+  const sha = event === 'pull_request'; //? payload.pull_request.head.sha : github.context.sha;
   core.info(`sha: ${sha}`);
 
   const referenceLink =
