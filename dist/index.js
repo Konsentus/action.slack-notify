@@ -1353,13 +1353,11 @@ const { buildSlackAttachments, lookUpChannelId } = __webpack_require__(543);
 
 const run = async () => {
   try {
-    const channel = core.getInput('channel');
-    const start = core.getInput('start');
-    const step = core.getInput('step');
+    const channel = process.env.SLACK_CHANNEL;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
-    const messageId = process.env.SLACK_MESSAGE_ID ? process.env.SLACK_MESSAGE_ID : core.getInput('message_id');
+    const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
@@ -1387,7 +1385,7 @@ const run = async () => {
       return;
     }
 
-    const apiMethod = Boolean(start) ? 'postMessage' : 'update';
+    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
     core.info(`apiMethod: ${apiMethod}`);
 
     const slackMessageArgs = {
@@ -9906,6 +9904,8 @@ function hasFirstPage (link) {
 
 const core = __webpack_require__(470);
 const { context } = __webpack_require__(469);
+
+const writeFile = (path, name, contents) => {};
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 

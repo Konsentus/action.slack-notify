@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const { context } = require('@actions/github');
 
+const writeFile = (path, name, contents) => {};
+
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {

@@ -5,13 +5,11 @@ const { buildSlackAttachments, lookUpChannelId } = require('./src/utils');
 
 const run = async () => {
   try {
-    const channel = core.getInput('channel');
-    const start = core.getInput('start');
-    const step = core.getInput('step');
+    const channel = process.env.SLACK_CHANNEL;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
-    const messageId = process.env.SLACK_MESSAGE_ID ? process.env.SLACK_MESSAGE_ID : core.getInput('message_id');
+    const messageId = core.getInput('message_id');
     const token = process.env.SLACK_BOT_TOKEN;
     const slack = new WebClient(token);
 
@@ -39,7 +37,7 @@ const run = async () => {
       return;
     }
 
-    const apiMethod = Boolean(start) ? 'postMessage' : 'update';
+    const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
     core.info(`apiMethod: ${apiMethod}`);
 
     const slackMessageArgs = {
