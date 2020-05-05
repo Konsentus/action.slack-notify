@@ -27,9 +27,8 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ step, status, color, github }) => {
+const buildSlackAttachments = ({ status, color, github }) => {
   core.info(`Starting buildSlackAttachments with params:
-    ${step}
     ${status}
     ${color}
     ${github}`);
@@ -64,8 +63,8 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
       color,
       fields: [
         {
-          title: 'Step',
-          value: `${step}`,
+          title: 'Job',
+          value: `${workflow}`,
           short: true,
         },
         {

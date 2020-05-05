@@ -16,7 +16,6 @@ const run = async () => {
     core.info(
       JSON.stringify({
         channel,
-        step,
         text,
         status,
         color,
@@ -29,7 +28,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github });
+    const slackAttachments = buildSlackAttachments({ status, color, github });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
