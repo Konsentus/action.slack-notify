@@ -16,14 +16,14 @@ const run = async () => {
     const slack = new WebClient(token);
 
     core.info(
-      JSON.stringify({
+      `action.slack-notify called with: ${JSON.stringify({
         channel,
         text,
         status,
         color,
         messageId,
         jobName,
-      })
+      })}`
     );
 
     if (!channel && !core.getInput('channel_id')) {
@@ -40,7 +40,6 @@ const run = async () => {
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
-    core.info(`apiMethod: ${apiMethod}`);
 
     const slackMessageArgs = {
       channel: channelId,
@@ -51,14 +50,9 @@ const run = async () => {
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
-    core.info(JSON.stringify(slackMessageArgs));
+    core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
-    core.info(JSON.stringify(response));
-
-    core.info(`message_id: ${response.ts}`);
-
-    core.setOutput('message_id', response.ts);
   } catch (error) {
     core.setFailed(error.message);
   }

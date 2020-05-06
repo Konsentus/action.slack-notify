@@ -1,13 +1,8 @@
-const core = require('@actions/core');
 const { context } = require('@actions/github');
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {
-  core.info(`Starting lookUpChannelId with params:
-    ${slack}
-    ${channel}`);
-
   let result;
   const formattedChannel = formatChannelName(channel);
 
@@ -26,24 +21,12 @@ const lookUpChannelId = async ({ slack, channel }) => {
 };
 
 const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) => {
-  core.info(`Starting buildSlackAttachments with params:
-    ${status}
-    ${color}
-    ${github}
-    ${jobName}
-    ${jobNumber}`);
-
   const { payload, ref, workflow, eventName, actor } = github.context;
-
-  core.info(`eventName: ${eventName}`);
 
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
-
-  core.info(`branch: ${branch}`);
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
-  core.info(`sha: ${sha}`);
 
   const githubEventType =
     event === 'pull_request'

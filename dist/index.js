@@ -1364,14 +1364,14 @@ const run = async () => {
     const slack = new WebClient(token);
 
     core.info(
-      JSON.stringify({
+      `action.slack-notify called with: ${JSON.stringify({
         channel,
         text,
         status,
         color,
         messageId,
         jobName,
-      })
+      })}`
     );
 
     if (!channel && !core.getInput('channel_id')) {
@@ -1388,7 +1388,6 @@ const run = async () => {
     }
 
     const apiMethod = Boolean(messageId) ? 'update' : 'postMessage';
-    core.info(`apiMethod: ${apiMethod}`);
 
     const slackMessageArgs = {
       channel: channelId,
@@ -1399,14 +1398,9 @@ const run = async () => {
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
-    core.info(JSON.stringify(slackMessageArgs));
+    core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
-    core.info(JSON.stringify(response));
-
-    core.info(`message_id: ${response.ts}`);
-
-    core.setOutput('message_id', response.ts);
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -9906,16 +9900,11 @@ function hasFirstPage (link) {
 /***/ 543:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const core = __webpack_require__(470);
 const { context } = __webpack_require__(469);
 
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {
-  core.info(`Starting lookUpChannelId with params:
-    ${slack}
-    ${channel}`);
-
   let result;
   const formattedChannel = formatChannelName(channel);
 
@@ -9934,24 +9923,12 @@ const lookUpChannelId = async ({ slack, channel }) => {
 };
 
 const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) => {
-  core.info(`Starting buildSlackAttachments with params:
-    ${status}
-    ${color}
-    ${github}
-    ${jobName}
-    ${jobNumber}`);
-
   const { payload, ref, workflow, eventName, actor } = github.context;
-
-  core.info(`eventName: ${eventName}`);
 
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
-
-  core.info(`branch: ${branch}`);
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
-  core.info(`sha: ${sha}`);
 
   const githubEventType =
     event === 'pull_request'
