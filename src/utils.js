@@ -1,8 +1,6 @@
 const core = require('@actions/core');
 const { context } = require('@actions/github');
 
-const writeFile = (path, name, contents) => {};
-
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {
@@ -27,11 +25,12 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ status, color, github }) => {
+const buildSlackAttachments = ({ status, color, github, jobName }) => {
   core.info(`Starting buildSlackAttachments with params:
     ${status}
     ${color}
-    ${github}`);
+    ${github}
+    ${jobName}`);
 
   const { payload, ref, workflow, eventName, run_id, actor } = github.context;
 
@@ -45,7 +44,7 @@ const buildSlackAttachments = ({ status, color, github }) => {
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
   core.info(`sha: ${sha}`);
 
-  const referenceLink =
+  const githubEventType =
     event === 'pull_request'
       ? {
           title: 'Pull Request',
@@ -64,8 +63,8 @@ const buildSlackAttachments = ({ status, color, github }) => {
       fields: [
         {
           title: 'Job',
-          value: `${workflow}`,
-          short: true,
+          value: `${jobName}`,
+          short: false,
         },
         {
           title: 'Action',
@@ -77,7 +76,7 @@ const buildSlackAttachments = ({ status, color, github }) => {
           value: status,
           short: true,
         },
-        referenceLink,
+        githubEventType,
         {
           title: 'Repo',
           value: `<https://github.com/${owner}/${repo} | ${repo}>`,

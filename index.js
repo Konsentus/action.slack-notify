@@ -6,6 +6,7 @@ const { buildSlackAttachments, lookUpChannelId } = require('./src/utils');
 const run = async () => {
   try {
     const channel = process.env.SLACK_CHANNEL;
+    const jobName = process.env.SLACK_JOB_NAME;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -20,6 +21,7 @@ const run = async () => {
         status,
         color,
         messageId,
+        jobName,
       })
     );
 
@@ -28,7 +30,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ status, color, github });
+    const slackAttachments = buildSlackAttachments({ status, color, github, jobName });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -52,6 +54,8 @@ const run = async () => {
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
     core.info(JSON.stringify(response));
+
+    core.info(`message_id: ${response.ts}`);
 
     core.setOutput('message_id', response.ts);
   } catch (error) {

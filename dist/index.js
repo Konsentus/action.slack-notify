@@ -1354,6 +1354,7 @@ const { buildSlackAttachments, lookUpChannelId } = __webpack_require__(543);
 const run = async () => {
   try {
     const channel = process.env.SLACK_CHANNEL;
+    const jobName = process.env.SLACK_JOB_NAME;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -1368,6 +1369,7 @@ const run = async () => {
         status,
         color,
         messageId,
+        jobName,
       })
     );
 
@@ -1376,7 +1378,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ status, color, github });
+    const slackAttachments = buildSlackAttachments({ status, color, github, jobName });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1400,6 +1402,8 @@ const run = async () => {
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
     core.info(JSON.stringify(response));
+
+    core.info(`message_id: ${response.ts}`);
 
     core.setOutput('message_id', response.ts);
   } catch (error) {
@@ -9904,8 +9908,6 @@ function hasFirstPage (link) {
 const core = __webpack_require__(470);
 const { context } = __webpack_require__(469);
 
-const writeFile = (path, name, contents) => {};
-
 const formatChannelName = channel => channel.replace(/[#@]/g, '');
 
 const lookUpChannelId = async ({ slack, channel }) => {
@@ -9930,11 +9932,12 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ status, color, github }) => {
+const buildSlackAttachments = ({ status, color, github, jobName }) => {
   core.info(`Starting buildSlackAttachments with params:
     ${status}
     ${color}
-    ${github}`);
+    ${github}
+    ${jobName}`);
 
   const { payload, ref, workflow, eventName, run_id, actor } = github.context;
 
@@ -9948,7 +9951,7 @@ const buildSlackAttachments = ({ status, color, github }) => {
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
   core.info(`sha: ${sha}`);
 
-  const referenceLink =
+  const githubEventType =
     event === 'pull_request'
       ? {
           title: 'Pull Request',
@@ -9967,8 +9970,8 @@ const buildSlackAttachments = ({ status, color, github }) => {
       fields: [
         {
           title: 'Job',
-          value: `${workflow}`,
-          short: true,
+          value: `${jobName}`,
+          short: false,
         },
         {
           title: 'Action',
@@ -9980,7 +9983,7 @@ const buildSlackAttachments = ({ status, color, github }) => {
           value: status,
           short: true,
         },
-        referenceLink,
+        githubEventType,
         {
           title: 'Repo',
           value: `<https://github.com/${owner}/${repo} | ${repo}>`,
