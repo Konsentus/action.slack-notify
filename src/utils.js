@@ -74,7 +74,7 @@ const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) =>
         },
         {
           title: 'Action',
-          value: `<https://github.com/${repo}/actions/runs/${jobNumber} | ${workflow}>`,
+          value: `<https://github.com/${owner}/${repo}/actions/runs/${jobNumber} | ${workflow}>`,
           short: true,
         },
         {
