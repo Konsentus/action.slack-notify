@@ -1355,6 +1355,7 @@ const run = async () => {
   try {
     const channel = process.env.SLACK_CHANNEL;
     const jobName = process.env.SLACK_JOB_NAME;
+    const jobNumber = process.env.SLACK_ACTION_JOB_NO;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -1378,7 +1379,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ status, color, github, jobName });
+    const slackAttachments = buildSlackAttachments({ status, color, github, jobName, jobNumber });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -9932,14 +9933,15 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ status, color, github, jobName }) => {
+const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) => {
   core.info(`Starting buildSlackAttachments with params:
     ${status}
     ${color}
     ${github}
-    ${jobName}`);
+    ${jobName}
+    ${jobNumber}`);
 
-  const { payload, ref, workflow, eventName, run_id, actor } = github.context;
+  const { payload, ref, workflow, eventName, actor } = github.context;
 
   core.info(`eventName: ${eventName}`);
 
@@ -9980,7 +9982,7 @@ const buildSlackAttachments = ({ status, color, github, jobName }) => {
         },
         {
           title: 'Action',
-          value: `<https://github.com/${repo}/actions/runs/${run_id} | ${workflow}>`,
+          value: `<https://github.com/${repo}/actions/runs/${jobNumber} | ${workflow}>`,
           short: true,
         },
         {

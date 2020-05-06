@@ -25,14 +25,15 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ status, color, github, jobName }) => {
+const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) => {
   core.info(`Starting buildSlackAttachments with params:
     ${status}
     ${color}
     ${github}
-    ${jobName}`);
+    ${jobName}
+    ${jobNumber}`);
 
-  const { payload, ref, workflow, eventName, run_id, actor } = github.context;
+  const { payload, ref, workflow, eventName, actor } = github.context;
 
   core.info(`eventName: ${eventName}`);
 
@@ -73,7 +74,7 @@ const buildSlackAttachments = ({ status, color, github, jobName }) => {
         },
         {
           title: 'Action',
-          value: `<https://github.com/${repo}/actions/runs/${run_id} | ${workflow}>`,
+          value: `<https://github.com/${repo}/actions/runs/${jobNumber} | ${workflow}>`,
           short: true,
         },
         {

@@ -7,6 +7,7 @@ const run = async () => {
   try {
     const channel = process.env.SLACK_CHANNEL;
     const jobName = process.env.SLACK_JOB_NAME;
+    const jobNumber = process.env.SLACK_ACTION_JOB_NO;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -30,7 +31,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ status, color, github, jobName });
+    const slackAttachments = buildSlackAttachments({ status, color, github, jobName, jobNumber });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
