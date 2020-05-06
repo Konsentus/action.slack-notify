@@ -62,9 +62,14 @@ const buildSlackAttachments = ({ status, color, github, jobName }) => {
       color,
       fields: [
         {
-          title: 'Job',
-          value: `${jobName}`,
-          short: false,
+          title: 'Repo',
+          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
+          short: true,
+        },
+        {
+          title: 'User',
+          value: `<https://github.com/${actor} | ${actor}>`,
+          short: true,
         },
         {
           title: 'Action',
@@ -78,18 +83,13 @@ const buildSlackAttachments = ({ status, color, github, jobName }) => {
         },
         githubEventType,
         {
-          title: 'Repo',
-          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
-          short: true,
-        },
-        {
-          title: 'Event',
-          value: event,
+          title: 'Job',
+          value: `${jobName}`,
           short: true,
         },
       ],
       footer_icon: 'https://octodex.github.com/images/jenktocat.jpg',
-      footer: `<https://github.com/${actor} | ${actor}>`,
+      // footer: `<https://github.com/${actor} | ${actor}>`,
       ts: Math.floor(Date.now() / 1000),
     },
   ];
