@@ -1,4 +1,4 @@
-# Slack Notify Build
+# action.slack-notify
 
 This action prints your GitHub Action build status to Slack. It takes an opinionated approach by showing attachments for metadata like branch, pull request, and event. This action allows [existing messages to be updated](#updating-an-existing-message) to reduce unwanted noise in your Slack channel. Heavily-inspired by [Post Slack messages](https://github.com/marketplace/actions/post-slack-message).
 
@@ -7,13 +7,24 @@ A [Slack bot token](https://api.slack.com/docs/token-types) is required to use t
 ## Usage
 
 ```yaml
-uses: voxmedia/github-action-slack-notify-build@v1
-with:
-  channel: app-alerts
-  status: STARTED
-  color: good
 env:
   SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+  SLACK_CHANNEL: testchannel
+  SLACK_ACTION_JOB_NO: ${{ github.run_id }}
+
+jobs:
+  send-slack-message-1:
+    name: Send slack message
+    runs-on: ubuntu-latest
+    env:
+      SLACK_JOB_NAME: ${{ github.job }}
+    steps:
+      - name: Notify start
+        uses: konsentus/action.slack-notify@v1.3
+        with:
+          text: Starting workflow
+          status: STARTED
+          color: good
 ```
 
 The Slack notification leverages attachments to group important information together and provide valuable links:
@@ -33,28 +44,24 @@ If you need to send multiple Slack build updates and you prefer to update a sing
 Note: You must assign a step `id` to the first Slack notification step in order to reference it for future steps:
 
 ```yaml
-- name: Notify slack success
-  if: success()
-  id: slack # IMPORTANT: reference this step ID value in future Slack steps
-  env:
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-  uses: voxmedia/github-action-slack-notify-build@v1
+- name: Notify start
+  uses: konsentus/action.slack-notify@v1.3
+  id: slack
   with:
-    channel: app-alerts
-    status: STARTING
-    color: warning
+    text: Starting workflow
+    status: STARTED
+    color: good
 
 - name: Run tests
+
   # ... your test step here
 - name: Notify slack success
   if: success()
-  env:
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-  uses: voxmedia/github-action-slack-notify-build@v1
+
+  uses: konsentus/action.slack-notify@v1.3
   with:
     # Updates existing message from the first step
     message_id: ${{ steps.slack.outputs.message_id }}
-    channel: app-alerts
     status: SUCCESS
     color: good
 ```
@@ -68,21 +75,15 @@ You can use the `success()` and `failure()` conditional checks within your workf
   # ... your test step here
 - name: Notify slack success
   if: success()
-  env:
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
   uses: voxmedia/github-action-slack-notify-build@v1
   with:
-    channel: app-alerts
     status: SUCCESS
     color: good
 
 - name: Notify slack fail
   if: failure()
-  env:
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
   uses: voxmedia/github-action-slack-notify-build@v1
   with:
-    channel: app-alerts
     status: FAILED
     color: danger
 ```

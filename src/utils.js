@@ -20,15 +20,15 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ step, status, color, github }) => {
-  const { payload, ref, workflow, eventName, run_id, actor } = github.context;
+const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) => {
+  const { payload, ref, workflow, eventName, actor } = github.context;
+
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
-
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
-  const referenceLink =
+  const githubEventType =
     event === 'pull_request'
       ? {
           title: 'Pull Request',
@@ -46,13 +46,18 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
       color,
       fields: [
         {
-          title: 'Step',
-          value: `${step}`,
+          title: 'Repo',
+          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
+          short: true,
+        },
+        {
+          title: 'User',
+          value: `<https://github.com/${actor} | ${actor}>`,
           short: true,
         },
         {
           title: 'Action',
-          value: `<https://github.com/${repo}/actions/runs/${run_id} | ${workflow}>`,
+          value: `<https://github.com/${owner}/${repo}/actions/runs/${jobNumber} | ${workflow}>`,
           short: true,
         },
         {
@@ -60,20 +65,15 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
           value: status,
           short: true,
         },
-        referenceLink,
+        githubEventType,
         {
-          title: 'Repo',
-          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
-          short: true,
-        },
-        {
-          title: 'Event',
-          value: event,
+          title: 'Job',
+          value: `${jobName}`,
           short: true,
         },
       ],
       footer_icon: 'https://octodex.github.com/images/jenktocat.jpg',
-      footer: `<https://github.com/${actor} | ${actor}>`,
+      // footer: `<https://github.com/${actor} | ${actor}>`,
       ts: Math.floor(Date.now() / 1000),
     },
   ];

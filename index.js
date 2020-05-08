@@ -5,8 +5,9 @@ const { buildSlackAttachments, lookUpChannelId } = require('./src/utils');
 
 const run = async () => {
   try {
-    const channel = core.getInput('channel');
-    const step = core.getInput('step');
+    const channel = process.env.SLACK_CHANNEL;
+    const jobName = process.env.SLACK_JOB_NAME;
+    const jobNumber = process.env.SLACK_ACTION_JOB_NO;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -15,14 +16,14 @@ const run = async () => {
     const slack = new WebClient(token);
 
     core.info(
-      JSON.stringify({
+      `action.slack-notify called with: ${JSON.stringify({
         channel,
-        step,
         text,
         status,
         color,
         messageId,
-      })
+        jobName,
+      })}`
     );
 
     if (!channel && !core.getInput('channel_id')) {
@@ -30,7 +31,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github });
+    const slackAttachments = buildSlackAttachments({ status, color, github, jobName, jobNumber });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -46,15 +47,12 @@ const run = async () => {
       text,
     };
 
-    core.info(JSON.stringify(slackMessageArgs));
-
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
+    core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
-
-    core.setOutput('message_id', response.ts);
   } catch (error) {
     core.setFailed(error.message);
   }

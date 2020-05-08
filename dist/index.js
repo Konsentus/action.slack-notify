@@ -1353,8 +1353,9 @@ const { buildSlackAttachments, lookUpChannelId } = __webpack_require__(543);
 
 const run = async () => {
   try {
-    const channel = core.getInput('channel');
-    const step = core.getInput('step');
+    const channel = process.env.SLACK_CHANNEL;
+    const jobName = process.env.SLACK_JOB_NAME;
+    const jobNumber = process.env.SLACK_ACTION_JOB_NO;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -1363,14 +1364,14 @@ const run = async () => {
     const slack = new WebClient(token);
 
     core.info(
-      JSON.stringify({
+      `action.slack-notify called with: ${JSON.stringify({
         channel,
-        step,
         text,
         status,
         color,
         messageId,
-      })
+        jobName,
+      })}`
     );
 
     if (!channel && !core.getInput('channel_id')) {
@@ -1378,7 +1379,7 @@ const run = async () => {
       return;
     }
 
-    const slackAttachments = buildSlackAttachments({ step, status, color, github });
+    const slackAttachments = buildSlackAttachments({ status, color, github, jobName, jobNumber });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1394,15 +1395,12 @@ const run = async () => {
       text,
     };
 
-    core.info(JSON.stringify(slackMessageArgs));
-
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
+    core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
-
-    core.setOutput('message_id', response.ts);
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -9924,15 +9922,15 @@ const lookUpChannelId = async ({ slack, channel }) => {
   return result;
 };
 
-const buildSlackAttachments = ({ step, status, color, github }) => {
-  const { payload, ref, workflow, eventName, run_id, actor } = github.context;
+const buildSlackAttachments = ({ status, color, github, jobName, jobNumber }) => {
+  const { payload, ref, workflow, eventName, actor } = github.context;
+
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
-
   const sha = event === 'pull_request' ? payload.pull_request.head.sha : github.context.sha;
 
-  const referenceLink =
+  const githubEventType =
     event === 'pull_request'
       ? {
           title: 'Pull Request',
@@ -9950,13 +9948,18 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
       color,
       fields: [
         {
-          title: 'Step',
-          value: `${step}`,
+          title: 'Repo',
+          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
+          short: true,
+        },
+        {
+          title: 'User',
+          value: `<https://github.com/${actor} | ${actor}>`,
           short: true,
         },
         {
           title: 'Action',
-          value: `<https://github.com/${repo}/actions/runs/${run_id} | ${workflow}>`,
+          value: `<https://github.com/${owner}/${repo}/actions/runs/${jobNumber} | ${workflow}>`,
           short: true,
         },
         {
@@ -9964,20 +9967,15 @@ const buildSlackAttachments = ({ step, status, color, github }) => {
           value: status,
           short: true,
         },
-        referenceLink,
+        githubEventType,
         {
-          title: 'Repo',
-          value: `<https://github.com/${owner}/${repo} | ${repo}>`,
-          short: true,
-        },
-        {
-          title: 'Event',
-          value: event,
+          title: 'Job',
+          value: `${jobName}`,
           short: true,
         },
       ],
       footer_icon: 'https://octodex.github.com/images/jenktocat.jpg',
-      footer: `<https://github.com/${actor} | ${actor}>`,
+      // footer: `<https://github.com/${actor} | ${actor}>`,
       ts: Math.floor(Date.now() / 1000),
     },
   ];
