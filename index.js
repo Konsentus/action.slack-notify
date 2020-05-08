@@ -53,6 +53,7 @@ const run = async () => {
     core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
 
     const response = await slack.chat[apiMethod](slackMessageArgs);
+    core.setOutput('message_id', response.ts);
   } catch (error) {
     core.setFailed(error.message);
   }
