@@ -1354,8 +1354,8 @@ const { buildSlackAttachments, lookUpChannelId } = __webpack_require__(543);
 const run = async () => {
   try {
     const channel = process.env.SLACK_CHANNEL;
-    const jobName = process.env.SLACK_JOB_NAME;
-    const jobNumber = process.env.SLACK_ACTION_JOB_NO;
+    const jobName = process.env.GITHUB_JOB;
+    const jobNumber = process.env.GITHUB_RUN_ID;
     const text = core.getInput('text', { required: true });
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
@@ -1398,8 +1398,8 @@ const run = async () => {
     if (messageId) {
       slackMessageArgs.ts = messageId;
     }
-    core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
 
+    core.info(`slackMessageArgs: ${JSON.stringify(slackMessageArgs)}`);
     const response = await slack.chat[apiMethod](slackMessageArgs);
     core.setOutput('message_id', response.ts);
   } catch (error) {
