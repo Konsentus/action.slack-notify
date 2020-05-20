@@ -8,7 +8,7 @@ A [Slack bot token](https://api.slack.com/docs/token-types) is required to use t
 
 ```yaml
 env:
-  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+  SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
   SLACK_CHANNEL: testchannel
   GITHUB_RUN_ID: ${{ github.run_id }}
 
