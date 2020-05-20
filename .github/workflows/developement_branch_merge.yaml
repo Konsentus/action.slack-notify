@@ -7,9 +7,6 @@ on:
 
 env:
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
-  SLACK_CHANNEL: build
-  GITHUB_RUN_ID: ${{ github.run_id }}
 
 jobs:
   snyk_node:
