@@ -1,0 +1,54 @@
+name: Push workflow for development branches (feature/hotfix)
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'hotfix/**'
+
+env:
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }
+  SLACK_CHANNEL: build
+  GITHUB_RUN_ID: ${{ github.run_id }}
+
+jobs:
+  snyk_node:
+    name: Scan Node dependencies with Snyk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run Snyk Scan
+        id: snyk_scan
+        uses: konsentus/action.snyk/node@master
+        with:
+          options: '--severity-threshold=high'
+
+      - name: Store Snyk results
+        if: failure()
+        uses: actions/upload-artifact@v1
+        with:
+          name: snyk-node-dependancy-results
+          path: ${{ steps.snyk_scan.outputs.results }}
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_JOB: ${{ github.job }}
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js v13.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 13
+
+      - name: Notify slack success
+        uses: ./
+        with:
+          message_id: ${{ steps.slack.outputs.message_id }}
+          text: action.slack-notify successfully sent message.
+          status: SUCCESS
+          color: good
