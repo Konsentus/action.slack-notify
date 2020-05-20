@@ -31,24 +31,3 @@ jobs:
         with:
           name: snyk-node-dependancy-results
           path: ${{ steps.snyk_scan.outputs.results }}
-
-  test:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_JOB: ${{ github.job }}
-    steps:
-      - name: Checkout
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js v13.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 13
-
-      - name: Notify slack success
-        uses: ./
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          text: action.slack-notify successfully sent message.
-          status: SUCCESS
-          color: good
