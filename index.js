@@ -12,7 +12,7 @@ const run = async () => {
     const status = core.getInput('status', { required: true });
     const color = core.getInput('color', { required: true });
     const messageId = core.getInput('message_id');
-    const token = process.env.SLACK_BOT_TOKEN;
+    const token = process.env.SLACK_TOKEN;
     const slack = new WebClient(token);
 
     core.info(

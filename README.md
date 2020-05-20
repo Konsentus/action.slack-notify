@@ -8,19 +8,19 @@ A [Slack bot token](https://api.slack.com/docs/token-types) is required to use t
 
 ```yaml
 env:
-  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+  SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
   SLACK_CHANNEL: testchannel
-  SLACK_ACTION_JOB_NO: ${{ github.run_id }}
+  GITHUB_RUN_ID: ${{ github.run_id }}
 
 jobs:
   send-slack-message-1:
     name: Send slack message
     runs-on: ubuntu-latest
     env:
-      SLACK_JOB_NAME: ${{ github.job }}
+      GITHUB_JOB: ${{ github.job }}
     steps:
       - name: Notify start
-        uses: konsentus/action.slack-notify@v1.3
+        uses: konsentus/action.slack-notify@v1.3.2
         with:
           text: Starting workflow
           status: STARTED
@@ -45,7 +45,7 @@ Note: You must assign a step `id` to the first Slack notification step in order 
 
 ```yaml
 - name: Notify start
-  uses: konsentus/action.slack-notify@v1.3
+  uses: konsentus/action.slack-notify@v1.3.2
   id: slack
   with:
     text: Starting workflow
@@ -53,12 +53,11 @@ Note: You must assign a step `id` to the first Slack notification step in order 
     color: good
 
 - name: Run tests
-
   # ... your test step here
 - name: Notify slack success
   if: success()
 
-  uses: konsentus/action.slack-notify@v1.3
+  uses: konsentus/action.slack-notify@v1.3.2
   with:
     # Updates existing message from the first step
     message_id: ${{ steps.slack.outputs.message_id }}
@@ -75,14 +74,14 @@ You can use the `success()` and `failure()` conditional checks within your workf
   # ... your test step here
 - name: Notify slack success
   if: success()
-  uses: voxmedia/github-action-slack-notify-build@v1
+  uses: konsentus/action.slack-notify@v1.3.2
   with:
     status: SUCCESS
     color: good
 
 - name: Notify slack fail
   if: failure()
-  uses: voxmedia/github-action-slack-notify-build@v1
+  uses: konsentus/action.slack-notify@v1.3.2
   with:
     status: FAILED
     color: danger
